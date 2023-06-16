@@ -38,6 +38,7 @@ pip install yolov5
 ```
 
 
+
 ## Input
 ```
 The model is reproduced on the move " Devil Wears Prada " and that is taken as input
