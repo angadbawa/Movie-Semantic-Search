@@ -37,13 +37,13 @@ pip install yolov5
 
 ```
 
-
-
 ## Input
 ```
-The model is reproduced on the move " Devil Wears Prada " and that is taken as input
+The model is reproduced on the movee " Devil Wears Prada " and that is taken as input
 ```
 
 ## Output
-``` The output shots and scenes will be saved in .mp4 format. The file will be located in the 'Movie Semantic Search'  directory and will be named Movie Shots, 
+``` 
+The output shots and scenes will be saved in .mp4 format. 
+The file will be located in the 'Movie Semantic Search'  directory.
 ``` 
