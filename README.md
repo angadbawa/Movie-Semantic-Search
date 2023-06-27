@@ -1,8 +1,6 @@
 # Movie Semantic Search 
 
 
-This is a PySpark project that recommends friends for users based on their mutual friends. It takes as input a text file containing a list of users and their friends, and outputs a list of recommended friends for each user.
-
 ## Introduction
 
 Movie data has witnessed exponential growth on the Internet, necessitating the analysis of multimedia content using computer vision techniques. This article presents a novel three-fold framework based on intelligent Convolutional Neural Networks (CNN) for scene segmentation in movies. The framework integrates shot segmentation, object detection, and object-based shot matching to accurately detect scene boundaries. The first fold segments the input movie into shots, the second fold detects objects in the segmented shots and the third fold performs object-based shots matching for detecting scene boundaries. Texture and shape features are fused for shots segmentation, and each shot is represented by a set of detected objects acquired from a lightweight CNN model. Finally, we apply set theory with the sliding window–based approach to integrate the same shots to decide scene boundaries. The experimental evaluation indicates that our proposed approach outran the existing movie scene segmentation approaches. The proposed semantic-based navigation system has the potential to revolutionize the way users interact with movies. By offering an intuitive and contextually meaningful navigation experience, users can easily navigate to specific scenes or moments of interest without having to rely on conventional timestamp-based navigation methods.
