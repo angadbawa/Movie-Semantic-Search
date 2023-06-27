@@ -30,10 +30,6 @@ pip install yolov5
 3. Run the code cells to generate the all the shots from the input movie.(Note it may take a while depending on your GPU Speed)
 4. The output shots will be saved in .mp4 format.
 5. Open the Movie Semantic Search.ipynb Jupyter Notebook.
-
-https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/6cef2052-a951-4fc1-b295-00fd9e89da22
-
-
 6. Run the remaining code generate the compiled scenes.
 7. The output scenes will be saved in .mp4 format.
 
