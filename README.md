@@ -53,11 +53,11 @@ be located in the 'Movie Semantic Search'  directory.
 ## Sample Scenes Generated
 
 
+https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/23120814-be03-4ced-9ea1-998e808cb371
 
 https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/984a6184-f755-4be8-ad54-6baee9f1d770
 
 
 
-https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/23120814-be03-4ced-9ea1-998e808cb371
 
 
