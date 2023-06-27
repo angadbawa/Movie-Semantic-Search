@@ -44,4 +44,18 @@ The model is reproduced on the movie " Devil Wears Prada " and that is taken as 
 ``` 
 The output shots and scenes will be saved in .mp4 format. The file will 
 be located in the 'Movie Semantic Search'  directory.
-``` 
+```
+
+## Sample Scenes Generated
+
+https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/4a81930a-6c7e-474f-982a-f522573ba126
+
+
+
+https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/5a5a80cb-7d35-47c5-a20e-c2b14e9427c9
+
+
+
+https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/e8fa675f-5079-4a96-9252-3cf0f462a632
+
+
