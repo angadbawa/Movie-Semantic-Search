@@ -15,6 +15,4 @@ scikit-image
 transformers
 av
 git+https://github.com/open-mmlab/mmaction2.git
-
-# Optional requirements
 opencv-python
