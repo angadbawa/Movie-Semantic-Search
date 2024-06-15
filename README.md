@@ -7,18 +7,17 @@ Movie data has witnessed exponential growth on the Internet, necessitating the a
 
 We are Reproducing the paper titled "Movie scene segmentation using object detection and set theory " by "Ijaz Ul Haq1 , Khan Muhammad2, Tanveer Hussain1, Soonil Kwon2, Maleerat Sodanil3, Sung Wook Baik1 and Mi Young Lee1 "
 
-
-## Requirements
-
-Python 3.6 or later
-Yolo V5
-open cv2
-
 ## Installation
 ```
-To run this project, you will need to install YoloV5. You can do this using pip:
+Clone the repository : <code>git clone https://github.com/angadbawa/Movie-Semantic-Search </code>
 
-pip install -r requirements.txt 
+Video Caption Generator: <code>cd Movie-Semantic-Search </code>
+
+Create environment: <code>conda create -n MSS python=3.7</code>
+
+Activate environment: <code>conda activate MSS</code>
+
+Install requirements: <code>pip install -r requirements.txt</code>
 ```
 
 ## Usage
