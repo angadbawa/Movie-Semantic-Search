@@ -18,9 +18,7 @@ open cv2
 ```
 To run this project, you will need to install YoloV5. You can do this using pip:
 
-pip install opencv-python
-pip install yolov5
-
+pip install -r requirements.txt 
 ```
 
 ## Usage
