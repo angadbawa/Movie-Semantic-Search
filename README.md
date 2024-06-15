@@ -7,6 +7,9 @@ Movie data has witnessed exponential growth on the Internet, necessitating the a
 
 We are Reproducing the paper titled "Movie scene segmentation using object detection and set theory " by "Ijaz Ul Haq1 , Khan Muhammad2, Tanveer Hussain1, Soonil Kwon2, Maleerat Sodanil3, Sung Wook Baik1 and Mi Young Lee1 "
 
+## Architecture 
+![Screenshot 2024-06-15 105204](https://github.com/angadbawa/Movie-Semantic-Search/assets/86665541/ac6b7084-f442-4eca-9183-65e152929bb9)
+
 ## Installation
 ```
 Clone the repository : <code>git clone https://github.com/angadbawa/Movie-Semantic-Search </code>
