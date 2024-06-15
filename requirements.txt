@@ -1,0 +1,20 @@
+# Core dependencies
+torch
+torchvision
+mmengine
+mmcv>=2.0.0
+mmaction2
+ultralytics
+wandb
+numpy
+pandas
+tqdm
+moviepy
+dlib
+scikit-image
+transformers
+av
+git+https://github.com/open-mmlab/mmaction2.git
+
+# Optional requirements
+opencv-python
