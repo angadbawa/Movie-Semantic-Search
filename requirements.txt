@@ -1,4 +1,3 @@
-# Core dependencies
 torch
 torchvision
 mmengine
