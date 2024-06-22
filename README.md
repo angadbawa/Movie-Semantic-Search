@@ -12,15 +12,15 @@ We are Reproducing the paper titled "Movie scene segmentation using object detec
 
 ## Installation
 ```
-Clone the repository : <code>git clone https://github.com/angadbawa/Movie-Semantic-Search </code>
+Clone the repository : git clone https://github.com/angadbawa/Movie-Semantic-Search 
 
-Video Caption Generator: <code>cd Movie-Semantic-Search </code>
+Navigate to the directory: cd Movie-Semantic-Search 
 
-Create environment: <code>conda create -n MSS python=3.7</code>
+Create environment: conda create -n MSS python=3.7
 
-Activate environment: <code>conda activate MSS</code>
+Activate environment: conda activate MSS
 
-Install requirements: <code>pip install -r requirements.txt</code>
+Install requirements: <code>pip install -r requirements.txt
 ```
 
 ## Usage
