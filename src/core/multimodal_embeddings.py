@@ -279,62 +279,113 @@ def combine_embeddings(text_emb: np.ndarray,
     
     return combined
 
-def search_similar_scenes(query_embedding: np.ndarray, 
-                         scene_embeddings: List[np.ndarray],
-                         scene_metadata: List[Dict[str, Any]],
+def search_similar_scenes(scenes_or_query: Any, 
+                         query_or_embeddings: Any = None,
+                         top_k_or_metadata: Any = None,
                          top_k: int = 5) -> List[Dict[str, Any]]:
     """
     Search for similar scenes using embedding similarity.
-    
-    Args:
-        query_embedding: Query embedding vector
-        scene_embeddings: List of scene embeddings
-        scene_metadata: List of scene metadata
-        top_k: Number of top results to return
-        
-    Returns:
-        List of similar scenes with similarity scores
+    Supports two calling patterns:
+    1. search_similar_scenes(scenes, query_embedding, top_k) - for scene objects
+    2. search_similar_scenes(query_embedding, scene_embeddings, scene_metadata, top_k) - for raw embeddings
     """
-    if len(scene_embeddings) != len(scene_metadata):
-        raise ValueError("Embeddings and metadata lists must have same length")
-    
-    similarities = []
-    
-    for i, scene_emb in enumerate(scene_embeddings):
-        # Calculate cosine similarity
-        if scene_emb is not None and scene_emb.size > 0:
-            # Ensure same dimensionality
-            min_dim = min(query_embedding.shape[0], scene_emb.shape[0])
-            query_norm = query_embedding[:min_dim]
-            scene_norm = scene_emb[:min_dim]
-            
-            # Normalize vectors
-            query_norm = query_norm / (np.linalg.norm(query_norm) + 1e-8)
-            scene_norm = scene_norm / (np.linalg.norm(scene_norm) + 1e-8)
-            
-            similarity = np.dot(query_norm, scene_norm)
-        else:
-            similarity = 0.0
+    # Pattern 1: scenes list with query embedding
+    if isinstance(scenes_or_query, list) and len(scenes_or_query) > 0 and isinstance(scenes_or_query[0], dict):
+        scenes = scenes_or_query
+        query_embedding = query_or_embeddings
+        k = top_k_or_metadata if top_k_or_metadata is not None else top_k
         
-        similarities.append({
-            'scene_index': i,
-            'similarity': float(similarity),
-            'metadata': scene_metadata[i]
-        })
+        similarities = []
+        for i, scene in enumerate(scenes):
+            scene_embedding = scene.get('embedding', {}).get('combined_embedding')
+            if scene_embedding is not None and hasattr(scene_embedding, 'shape'):
+                # Calculate cosine similarity
+                min_dim = min(query_embedding.shape[0], scene_embedding.shape[0])
+                query_norm = query_embedding[:min_dim]
+                scene_norm = scene_embedding[:min_dim]
+                
+                # Normalize vectors
+                query_norm = query_norm / (np.linalg.norm(query_norm) + 1e-8)
+                scene_norm = scene_norm / (np.linalg.norm(scene_norm) + 1e-8)
+                
+                similarity = np.dot(query_norm, scene_norm)
+            else:
+                similarity = 0.0
+            
+            similarities.append({
+                'scene': scene,
+                'similarity_score': float(similarity)
+            })
+        
+        # Sort by similarity and return top-k
+        similarities.sort(key=lambda x: x['similarity_score'], reverse=True)
+        return similarities[:k]
     
-    # Sort by similarity and return top-k
-    similarities.sort(key=lambda x: x['similarity'], reverse=True)
-    return similarities[:top_k]
+    # Pattern 2: raw embeddings
+    else:
+        query_embedding = scenes_or_query
+        scene_embeddings = query_or_embeddings
+        scene_metadata = top_k_or_metadata
+        k = top_k
+        
+        if len(scene_embeddings) != len(scene_metadata):
+            raise ValueError("Embeddings and metadata lists must have same length")
+        
+        similarities = []
+        
+        for i, scene_emb in enumerate(scene_embeddings):
+            # Calculate cosine similarity
+            if scene_emb is not None and scene_emb.size > 0:
+                # Ensure same dimensionality
+                min_dim = min(query_embedding.shape[0], scene_emb.shape[0])
+                query_norm = query_embedding[:min_dim]
+                scene_norm = scene_emb[:min_dim]
+                
+                # Normalize vectors
+                query_norm = query_norm / (np.linalg.norm(query_norm) + 1e-8)
+                scene_norm = scene_norm / (np.linalg.norm(scene_norm) + 1e-8)
+                
+                similarity = np.dot(query_norm, scene_norm)
+            else:
+                similarity = 0.0
+            
+            similarities.append({
+                'scene_index': i,
+                'similarity': float(similarity),
+                'metadata': scene_metadata[i]
+            })
+        
+        # Sort by similarity and return top-k
+        similarities.sort(key=lambda x: x['similarity'], reverse=True)
+        return similarities[:k]
 
-def process_natural_language_query(query: str) -> Dict[str, Any]:
+def process_natural_language_query(query: str) -> Optional[np.ndarray]:
     """
-    Process natural language query to extract search criteria.
+    Process natural language query and return embedding for similarity search.
     
     Args:
         query: Natural language query
         
     Returns:
-        Parsed query criteria
+        Query embedding vector or None if processing fails
+    """
+    try:
+        # Create text embedding for the query
+        query_embedding = create_text_embedding(query)
+        return query_embedding
+    except Exception as e:
+        logging.error(f"Failed to process query '{query}': {e}")
+        return None
+
+def parse_natural_language_query(query: str) -> Dict[str, Any]:
+    """
+    Parse natural language query to extract structured search criteria.
+    
+    Args:
+        query: Natural language query
+        
+    Returns:
+        Parsed query criteria with extracted entities
     """
     query_lower = query.lower()
     

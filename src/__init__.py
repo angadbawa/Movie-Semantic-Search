@@ -4,7 +4,6 @@ from .core.object_detection import load_yolov8_model, detect_objects_in_frame
 from .core.face_recognition import detect_and_encode_faces
 from .core.similarity_metrics import calculate_similarity_metrics
 
-
 from .utils.config import get_config, update_config, get_path
 from .utils.helpers import setup_logging, compose, pipe
 

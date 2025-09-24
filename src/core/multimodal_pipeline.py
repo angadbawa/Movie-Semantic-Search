@@ -455,6 +455,104 @@ class MultimodalMovieAnalyzer:
         }
         
         return stats
+    
+    def search_scenes_by_query(self, movie_id: str, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
+        """
+        Search scenes in a movie using natural language query.
+        
+        Args:
+            movie_id: Movie identifier
+            query: Natural language search query
+            top_k: Number of top results to return
+            
+        Returns:
+            List of matching scenes with similarity scores
+        """
+        logging.info(f"Searching scenes in movie {movie_id} for query: '{query}'")
+        
+        # Load movie data
+        movie_data = self.metadata_storage.load_movie_analysis(movie_id)
+        if not movie_data:
+            logging.error(f"Movie {movie_id} not found")
+            return []
+        
+        scenes = movie_data.get('scenes', [])
+        if not scenes:
+            logging.warning(f"No scenes found for movie {movie_id}")
+            return []
+        
+        # Process query to get embedding
+        query_embedding = process_natural_language_query(query)
+        if query_embedding is None:
+            logging.error("Failed to process query")
+            return []
+        
+        # Search for similar scenes
+        results = search_similar_scenes(scenes, query_embedding, top_k)
+        
+        # Enhance results with additional information
+        enhanced_results = []
+        for result in results:
+            scene = result['scene']
+            enhanced_result = {
+                'scene_id': scene.get('scene_id', 'unknown'),
+                'similarity_score': result['similarity_score'],
+                'start_timestamp': scene.get('start_timestamp', 0),
+                'end_timestamp': scene.get('end_timestamp', 0),
+                'duration': scene.get('duration_seconds', 0),
+                'description': self._generate_scene_description(scene),
+                'shot_count': scene.get('shot_count', 0)
+            }
+            
+            # Add actor information if available
+            actors_present = scene.get('signatures', {}).get('actors', {}).get('actors_present', [])
+            if actors_present:
+                enhanced_result['actors_present'] = actors_present
+            
+            # Add action information if query relates to dancing
+            if 'danc' in query.lower():
+                actions = scene.get('signatures', {}).get('actions', {})
+                dancing_confidence = actions.get('dancing', {}).get('confidence', 0)
+                enhanced_result['dancing_confidence'] = dancing_confidence
+            
+            enhanced_results.append(enhanced_result)
+        
+        return enhanced_results
+    
+    def _generate_scene_description(self, scene: Dict[str, Any]) -> str:
+        """Generate a human-readable description of a scene."""
+        signatures = scene.get('signatures', {})
+        
+        description_parts = []
+        
+        # Objects
+        objects = signatures.get('objects', {}).get('unique_objects', [])
+        if objects:
+            description_parts.append(f"Objects: {', '.join(objects[:3])}")
+        
+        # Actors
+        actors = signatures.get('actors', {}).get('actors_present', [])
+        if actors:
+            description_parts.append(f"Actors: {', '.join(actors[:2])}")
+        
+        # Actions
+        actions = signatures.get('actions', {})
+        if actions:
+            top_actions = []
+            for action, data in actions.items():
+                if isinstance(data, dict) and data.get('confidence', 0) > 0.5:
+                    top_actions.append(action)
+            if top_actions:
+                description_parts.append(f"Actions: {', '.join(top_actions[:2])}")
+        
+        # Emotions
+        emotions = signatures.get('emotions', {})
+        if emotions:
+            dominant_emotion = max(emotions.items(), key=lambda x: x[1] if isinstance(x[1], (int, float)) else 0)
+            if dominant_emotion[1] > 0.3:
+                description_parts.append(f"Emotion: {dominant_emotion[0]}")
+        
+        return "; ".join(description_parts) if description_parts else "Scene content"
 
 # Safe versions of key methods
 safe_analyze_complete_movie = safe_execute(MultimodalMovieAnalyzer().analyze_complete_movie, default={})

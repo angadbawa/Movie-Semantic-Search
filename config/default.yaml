@@ -1,0 +1,80 @@
+# Movie Semantic Search - Default Configuration
+
+# Video processing settings
+video:
+  max_frames: null  # null for no limit
+  frame_rate: 30
+  resize_width: 640
+  resize_height: 480
+
+# Shot segmentation settings
+shot_segmentation:
+  threshold: 0.3
+  min_shot_length: 30  # minimum frames per shot
+  similarity_method: "histogram"  # "histogram", "ssim", "combined"
+  
+# Scene detection settings
+scene_detection:
+  similarity_threshold: 0.7
+  min_scene_shots: 2
+  window_size: 5
+  
+# Object detection settings
+object_detection:
+  model_name: "yolov8n.pt"
+  confidence_threshold: 0.5
+  device: "cuda"  # "cuda" or "cpu"
+  
+# Face recognition settings
+face_recognition:
+  model_name: "hog"  # "hog" or "cnn"
+  tolerance: 0.6
+  num_jitters: 1
+  
+# Action recognition settings
+action_recognition:
+  model_name: "slowfast_r50"
+  confidence_threshold: 0.5
+  batch_size: 8
+  
+# Emotion detection settings
+emotion_detection:
+  model_name: "fer2013_mini_XCEPTION"
+  confidence_threshold: 0.3
+  
+# Audio analysis settings
+audio_analysis:
+  sample_rate: 16000
+  chunk_duration: 5.0  # seconds
+  
+# Multimodal embeddings settings
+multimodal_embeddings:
+  text_model: "sentence-transformers/all-MiniLM-L6-v2"
+  embedding_dim: 384
+  similarity_threshold: 0.7
+  
+# Processing settings
+processing:
+  batch_size: 32
+  num_workers: 4
+  use_gpu: true
+  
+# Storage paths
+paths:
+  output_dir: "output"
+  shots_dir: "output/shots"
+  scenes_dir: "output/scenes"
+  metadata_dir: "output/metadata"
+  models_dir: "models"
+  temp_dir: "temp"
+  
+# Database settings
+database:
+  type: "sqlite"  # "sqlite" or "json"
+  path: "output/metadata/movie_database.db"
+  
+# Logging settings
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/movie_analysis.log"

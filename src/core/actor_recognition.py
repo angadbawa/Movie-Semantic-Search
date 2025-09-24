@@ -360,6 +360,48 @@ def create_actor_signature(shot_actors: Dict[str, Any]) -> Dict[str, Any]:
         'max_actors_per_frame': shot_actors.get('max_actors_per_frame', 0)
     }
 
+# Global actor database instance
+_actor_database = None
+
+def initialize_actor_database(actor_config: Dict[str, Any]) -> None:
+    """
+    Initialize the global actor database with actor configurations.
+    
+    Args:
+        actor_config: Dictionary mapping actor names to their image paths/encodings
+    """
+    global _actor_database
+    _actor_database = ActorDatabase()
+    
+    for actor_name, actor_data in actor_config.items():
+        if 'image_paths' in actor_data:
+            # Load face encodings from image paths
+            face_encodings = []
+            for image_path in actor_data['image_paths']:
+                try:
+                    # Load image and extract face encodings
+                    image = cv2.imread(image_path)
+                    if image is not None:
+                        faces = detect_and_encode_faces(image)
+                        if faces:
+                            face_encodings.extend([face['encoding'] for face in faces])
+                except Exception as e:
+                    logging.warning(f"Failed to load image {image_path} for actor {actor_name}: {e}")
+            
+            if face_encodings:
+                _actor_database.add_actor(actor_name, face_encodings, actor_data.get('metadata', {}))
+        
+        elif 'encodings' in actor_data:
+            # Use pre-computed encodings
+            encodings = [np.array(enc) for enc in actor_data['encodings']]
+            _actor_database.add_actor(actor_name, encodings, actor_data.get('metadata', {}))
+    
+    logging.info(f"Initialized actor database with {len(_actor_database.actors)} actors")
+
+def get_actor_database() -> Optional[ActorDatabase]:
+    """Get the global actor database instance."""
+    return _actor_database
+
 # Safe versions of functions
 safe_identify_actors_in_frame = safe_execute(identify_actors_in_frame, default=[])
 safe_analyze_shot_actors = safe_execute(analyze_shot_actors, default={})
