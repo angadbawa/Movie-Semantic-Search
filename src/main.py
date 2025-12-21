@@ -5,7 +5,6 @@ import json
 from pathlib import Path
 from typing import Optional, List
 
-# Add current directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
 def setup_basic_imports():
@@ -114,13 +113,13 @@ def process_shots_mode(video_path: str, output_dir: Optional[str] = None, module
     shots = modules['process_video_to_shots'](video_path, output_dir)
     
     if shots:
-        logging.info(f"✅ Successfully processed {len(shots)} shots")
+        logging.info(f"[OK] Successfully processed {len(shots)} shots")
         for i, shot in enumerate(shots[:5]):  # Show first 5 shots
             logging.info(f"Shot {i+1}: {shot['frame_count']} frames, "
                         f"{shot['duration_seconds']:.1f}s, "
                         f"{len(shot.get('objects', {}).get('unique_objects', []))} objects")
     else:
-        logging.error("❌ No shots were processed")
+        logging.error("[ERROR] No shots were processed")
     
     return shots
 
@@ -135,13 +134,13 @@ def process_scenes_mode(shots_data: list, modules=None) -> list:
     scenes = modules['process_shots_to_scenes'](shots_data)
     
     if scenes:
-        logging.info(f"✅ Successfully detected {len(scenes)} scenes")
+        logging.info(f"[OK] Successfully detected {len(scenes)} scenes")
         for i, scene in enumerate(scenes):
             logging.info(f"Scene {i+1}: {scene['shot_count']} shots, "
                         f"{scene['duration_seconds']:.1f}s, "
                         f"{len(scene['unique_objects'])} unique objects")
     else:
-        logging.error("❌ No scenes were detected")
+        logging.error("[ERROR] No scenes were detected")
     
     return scenes
 
@@ -149,13 +148,11 @@ def process_full_pipeline(video_path: str, output_dir: Optional[str] = None, mod
     """Run the complete basic processing pipeline."""
     logging.info("=== BASIC FULL PIPELINE MODE ===")
     
-    # Process shots
     shots = process_shots_mode(video_path, output_dir, modules)
     
     if not shots:
         return [], []
     
-    # Process scenes
     scenes = process_scenes_mode(shots, modules)
     
     return shots, scenes
@@ -185,7 +182,6 @@ def handle_basic_pipeline(args):
         logging.error(f"Video file not found: {video_path}")
         return False
     
-    # Setup output directory
     if args.output_dir:
         output_dir = Path(args.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -206,7 +202,6 @@ def handle_basic_pipeline(args):
                 logging.error("--shots-dir required for scenes-only mode")
                 return False
             
-            # Load shots metadata
             shots_file = Path(args.shots_dir) / "shots_metadata.json"
             if not shots_file.exists():
                 logging.error(f"Shots metadata not found: {shots_file}")
@@ -220,14 +215,13 @@ def handle_basic_pipeline(args):
         else:  # full mode
             shots, scenes = process_full_pipeline(str(video_path), str(output_dir), modules)
         
-        # Save results
         save_results(shots, scenes, output_dir)
         
         # Summary
         logging.info("=== BASIC PROCESSING COMPLETE ===")
-        logging.info(f"📊 Total shots: {len(shots)}")
+        logging.info(f"Total shots: {len(shots)}")
         logging.info(f"🎬 Total scenes: {len(scenes)}")
-        logging.info(f"📁 Results saved to: {output_dir}")
+        logging.info(f"Results saved to: {output_dir}")
         
         return True
         
@@ -255,11 +249,11 @@ def analyze_movie_command(args, modules):
         results = analyzer.analyze_complete_movie(str(video_path), args.movie_id)
         
         if results:
-            logging.info("✅ Multimodal analysis completed successfully!")
+            logging.info("[OK] Multimodal analysis completed successfully!")
             
             # Print summary
             stats = results.get('analysis_metadata', {})
-            print(f"\n📊 Multimodal Analysis Summary:")
+            print(f"\nMultimodal Analysis Summary:")
             print(f"   Movie ID: {args.movie_id}")
             print(f"   Total Shots: {stats.get('total_shots', 0)}")
             print(f"   Total Scenes: {stats.get('total_scenes', 0)}")
@@ -274,7 +268,7 @@ def analyze_movie_command(args, modules):
             
             return True
         else:
-            logging.error("❌ Multimodal analysis failed")
+            logging.error("[ERROR] Multimodal analysis failed")
             return False
             
     except Exception as e:
@@ -285,7 +279,6 @@ def search_scenes_command(args, modules):
     """Handle multimodal scene search command."""
     logging.info(f"Searching scenes in movie {args.movie_id} for: '{args.query}'")
     
-    # Initialize analyzer
     analyzer = modules['MultimodalMovieAnalyzer']()
     
     try:
@@ -293,7 +286,7 @@ def search_scenes_command(args, modules):
         results = analyzer.search_scenes_by_query(args.movie_id, args.query, args.top_k)
         
         if results:
-            print(f"\n🔍 Multimodal Search Results for: '{args.query}'")
+            print(f"\nMultimodal Search Results for: '{args.query}'")
             print(f"Found {len(results)} matching scenes:\n")
             
             for i, result in enumerate(results, 1):
@@ -313,7 +306,7 @@ def search_scenes_command(args, modules):
             
             return True
         else:
-            print(f"❌ No scenes found matching: '{args.query}'")
+            print(f"[ERROR] No scenes found matching: '{args.query}'")
             return False
             
     except Exception as e:
@@ -337,7 +330,7 @@ def init_actors_command(args, modules):
         # Initialize database
         modules['initialize_actor_database'](actor_config)
         
-        print(f"✅ Actor database initialized with {len(actor_config)} actors")
+        print(f"[OK] Actor database initialized with {len(actor_config)} actors")
         for actor_name in actor_config.keys():
             print(f"   - {actor_name}")
         
@@ -351,16 +344,14 @@ def stats_command(args, modules):
     """Handle statistics command."""
     logging.info(f"Getting statistics for movie: {args.movie_id}")
     
-    # Initialize storage
     storage = modules['MetadataStorage']()
     
     try:
         stats = storage.get_movie_statistics(args.movie_id)
         
         if stats:
-            print(f"\n📊 Statistics for Movie: {args.movie_id}")
+            print(f"\nStatistics for Movie: {args.movie_id}")
             
-            # Basic stats
             basic = stats.get('basic_stats', {})
             print(f"\n📹 Basic Information:")
             print(f"   Total Shots: {basic.get('total_shots', 0)}")
@@ -383,7 +374,7 @@ def stats_command(args, modules):
             
             return True
         else:
-            print(f"❌ No statistics found for movie: {args.movie_id}")
+            print(f"[ERROR] No statistics found for movie: {args.movie_id}")
             return False
             
     except Exception as e:
@@ -401,7 +392,7 @@ def list_movies_command(args, modules):
         movies = storage.list_all_movies()
         
         if movies:
-            print(f"\n📚 Analyzed Movies ({len(movies)} total):")
+            print(f"\nAnalyzed Movies ({len(movies)} total):")
             print()
             
             for movie in movies:
@@ -414,7 +405,7 @@ def list_movies_command(args, modules):
             
             return True
         else:
-            print("❌ No movies found in database")
+            print("[ERROR] No movies found in database")
             return False
             
     except Exception as e:
@@ -425,24 +416,22 @@ def export_movie_command(args, modules):
     """Handle movie data export command."""
     logging.info(f"Exporting movie data: {args.movie_id}")
     
-    # Initialize storage
     storage = modules['MetadataStorage']()
     
     try:
         movie_data = storage.load_movie_analysis(args.movie_id)
         
         if movie_data:
-            # Save to JSON file
             output_path = Path(args.output)
             output_path.parent.mkdir(parents=True, exist_ok=True)
             
             with open(output_path, 'w') as f:
                 json.dump(movie_data, f, indent=2, default=str)
             
-            print(f"✅ Movie data exported to: {output_path}")
+            print(f"[OK] Movie data exported to: {output_path}")
             return True
         else:
-            print(f"❌ Movie not found: {args.movie_id}")
+            print(f"[ERROR] Movie not found: {args.movie_id}")
             return False
             
     except Exception as e:
@@ -469,9 +458,9 @@ def handle_multimodal_pipeline(args):
         if args.db_command == 'export':
             success = export_movie_command(args, modules)
         else:
-            print("❌ Unknown database command")
+            print("[ERROR] Unknown database command")
     else:
-        print("❌ Unknown multimodal command")
+        print("[ERROR] Unknown multimodal command")
     
     return success
 
@@ -480,10 +469,8 @@ def main():
     parser = setup_argument_parser()
     args = parser.parse_args()
     
-    # Setup logging
     log_level = getattr(logging, args.log_level)
     
-    # Import setup_logging from appropriate module
     if args.pipeline == 'basic':
         modules = setup_basic_imports()
         modules['setup_logging'](level=log_level)
@@ -493,7 +480,6 @@ def main():
     else:
         logging.basicConfig(level=log_level)
     
-    # Handle pipeline commands
     success = False
     
     if args.pipeline == 'basic':

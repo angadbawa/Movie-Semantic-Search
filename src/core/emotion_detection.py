@@ -66,12 +66,10 @@ def detect_emotions_in_faces(image: np.ndarray,
             # Predict emotions
             emotion_scores = model.predict_emotions(face_crop, logits=False)
             
-            # Get top emotion
             top_emotion_idx = np.argmax(emotion_scores)
             top_emotion = model.get_labels()[top_emotion_idx]
             top_confidence = float(emotion_scores[top_emotion_idx])
             
-            # Create emotion dictionary
             emotion_dict = {}
             for j, label in enumerate(model.get_labels()):
                 emotion_dict[label] = float(emotion_scores[j])
@@ -107,7 +105,6 @@ def analyze_frame_emotions(image: np.ndarray,
     if not faces:
         return {'emotions': [], 'dominant_emotion': None, 'emotion_counts': {}}
     
-    # Extract face bboxes
     face_bboxes = [face['bbox'] for face in faces]
     
     # Detect emotions
@@ -165,7 +162,6 @@ def analyze_shot_emotions(shot_frames: List[np.ndarray],
             for emotion_data in frame_emotion['emotions']:
                 all_emotions.append(emotion_data['top_emotion'])
             
-            # Add to timeline
             emotion_timeline.append({
                 'frame_index': i,
                 'dominant_emotion': frame_emotion['dominant_emotion'],
@@ -178,7 +174,6 @@ def analyze_shot_emotions(shot_frames: List[np.ndarray],
     for emotion in all_emotions:
         emotion_counts[emotion] = emotion_counts.get(emotion, 0) + 1
     
-    # Calculate emotion percentages
     total_detections = len(all_emotions)
     emotion_percentages = {}
     if total_detections > 0:
@@ -246,10 +241,8 @@ def calculate_emotion_similarity(emotions1: Dict[str, Any], emotions2: Dict[str,
     elif not dist1 or not dist2:
         distribution_similarity = 0.0
     else:
-        # Get all unique emotions
         all_emotions = set(dist1.keys()) | set(dist2.keys())
         
-        # Create vectors
         vec1 = np.array([dist1.get(emotion, 0) for emotion in all_emotions])
         vec2 = np.array([dist2.get(emotion, 0) for emotion in all_emotions])
         
@@ -289,7 +282,6 @@ def detect_emotional_scenes(shots_emotions: List[Dict[str, Any]],
         dominant = shot_emotion.get('shot_dominant_emotion')
         percentages = shot_emotion.get('emotion_percentages', {})
         
-        # Check if target emotion is dominant or significant
         target_percentage = percentages.get(target_emotion, 0)
         
         if dominant == target_emotion or target_percentage > 0.3:

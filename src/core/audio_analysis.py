@@ -295,17 +295,13 @@ def extract_keywords_from_summary(summary: str) -> List[str]:
     if not summary:
         return []
     
-    # Simple keyword extraction (could be enhanced with NLP)
     import re
     
-    # Remove common words
     stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were'}
     
-    # Extract words
     words = re.findall(r'\b[a-zA-Z]+\b', summary.lower())
     keywords = [word for word in words if len(word) > 3 and word not in stop_words]
     
-    # Return unique keywords
     return list(set(keywords))
 
 def calculate_dialogue_similarity(dialogue1: Dict[str, Any], dialogue2: Dict[str, Any]) -> float:

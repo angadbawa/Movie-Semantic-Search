@@ -133,7 +133,6 @@ class MultimodalMovieAnalyzer:
             audio_analysis = analyze_shot_audio(shot['video_path'])
         dialogue_signature = create_dialogue_signature(audio_analysis)
         
-        # Create multimodal embedding
         multimodal_data = {
             'objects': objects_signature,
             'faces': faces_signature,
@@ -209,7 +208,6 @@ class MultimodalMovieAnalyzer:
         signatures1 = shot1.get('signatures', {})
         signatures2 = shot2.get('signatures', {})
         
-        # Calculate similarity for each modality
         similarities = {}
         
         # Object similarity
@@ -277,15 +275,12 @@ class MultimodalMovieAnalyzer:
         Returns:
             List of matching scenes with timestamps
         """
-        # Load movie analysis
         movie_data = self.metadata_storage.load_movie_analysis(movie_id)
         if not movie_data:
             return []
         
-        # Process query
         query_data = process_natural_language_query(query)
         
-        # Handle specific queries like "Abhishek and Amitabh dancing together"
         if query_data['actors'] and 'dancing' in query_data['actions']:
             return self._search_actors_dancing_together(
                 movie_data, query_data['actors'], top_k
@@ -297,7 +292,6 @@ class MultimodalMovieAnalyzer:
         scene_metadata = []
         
         for scene in scenes:
-            # Get representative embedding (average of shot embeddings)
             shot_embeddings = []
             for shot_idx in scene.get('shot_indices', []):
                 if shot_idx < len(movie_data.get('shots', [])):
@@ -315,7 +309,6 @@ class MultimodalMovieAnalyzer:
         query_embedding = query_data['query_embedding']
         results = search_similar_scenes(query_embedding, scene_embeddings, scene_metadata, top_k)
         
-        # Add timestamps and additional info
         enhanced_results = []
         for result in results:
             scene = result['metadata']
@@ -409,7 +402,6 @@ class MultimodalMovieAnalyzer:
             if embedding is not None:
                 shot_embeddings.append(embedding)
         
-        # Create scene embeddings (average of constituent shots)
         for scene in scenes:
             shot_indices = scene.get('shot_indices', [])
             scene_shot_embeddings = []

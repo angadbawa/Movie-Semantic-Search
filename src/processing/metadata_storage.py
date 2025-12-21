@@ -227,14 +227,12 @@ class MetadataStorage:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
             
-            # Load movie metadata
             cursor.execute('SELECT * FROM movies WHERE movie_id = ?', (movie_id,))
             movie_row = cursor.fetchone()
             
             if not movie_row:
                 return None
             
-            # Load shots
             cursor.execute('SELECT * FROM shots WHERE movie_id = ? ORDER BY shot_index', (movie_id,))
             shot_rows = cursor.fetchall()
             
@@ -255,7 +253,6 @@ class MetadataStorage:
                 }
                 shots.append(shot)
             
-            # Load scenes
             cursor.execute('SELECT * FROM scenes WHERE movie_id = ? ORDER BY scene_index', (movie_id,))
             scene_rows = cursor.fetchall()
             
@@ -273,7 +270,6 @@ class MetadataStorage:
                 }
                 scenes.append(scene)
             
-            # Load interaction graph
             cursor.execute('SELECT * FROM actor_interactions WHERE movie_id = ?', (movie_id,))
             interaction_rows = cursor.fetchall()
             

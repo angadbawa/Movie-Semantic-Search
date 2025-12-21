@@ -73,7 +73,6 @@ def initialize_actor_database(actor_data: Dict[str, Dict[str, Any]]):
     for actor_name, data in actor_data.items():
         encodings = []
         
-        # Process reference images for this actor
         for image_path in data.get('image_paths', []):
             try:
                 image = cv2.imread(image_path)
@@ -169,7 +168,6 @@ def analyze_shot_actors(shot_frames: List[np.ndarray],
                 actor_appearances[actor_name] = []
             actor_appearances[actor_name].append(i)
     
-    # Calculate actor statistics
     actor_stats = {}
     for actor_name, frame_indices in actor_appearances.items():
         actor_stats[actor_name] = {
@@ -186,7 +184,6 @@ def analyze_shot_actors(shot_frames: List[np.ndarray],
         actors_in_frame = [actor['actor_name'] for actor in frame_data['actors']]
         
         if len(actors_in_frame) > 1:
-            # Create pairs of co-occurring actors
             for i, actor1 in enumerate(actors_in_frame):
                 for actor2 in actors_in_frame[i+1:]:
                     pair = tuple(sorted([actor1, actor2]))
@@ -236,12 +233,10 @@ def create_actor_interaction_graph(shots_actors: List[Dict[str, Any]]) -> Dict[s
             global_co_occurrences[pair]['shots'].append(shot_idx)
             global_co_occurrences[pair]['total_frames'] += len(frame_indices)
     
-    # Calculate interaction strengths
     interaction_strengths = {}
     for pair, data in global_co_occurrences.items():
         actor1, actor2 = pair
         
-        # Calculate interaction strength based on:
         # 1. Number of shots they appear together
         # 2. Total frames they're together
         # 3. Relative to their individual appearances
@@ -288,23 +283,19 @@ def find_actors_dancing_together(shots_actors: List[Dict[str, Any]],
         if not actor_data or not action_data:
             continue
         
-        # Check if shot has dancing
         has_dancing = action_data.get('has_dancing', False)
         if not has_dancing:
             continue
         
-        # Check if target actors are present
         actors_present = set(actor_data.get('actors_present', []))
         target_actors_set = set(target_actors)
         
         if not target_actors_set.issubset(actors_present):
             continue  # Not all target actors are present
         
-        # Check if target actors appear together in frames with dancing
         co_occurrences = actor_data.get('co_occurrences', {})
         dancing_segments = action_data.get('dancing_segments', [])
         
-        # Check if any target actor pairs co-occur during dancing segments
         target_pairs = []
         for i, actor1 in enumerate(target_actors):
             for actor2 in target_actors[i+1:]:
@@ -320,7 +311,6 @@ def find_actors_dancing_together(shots_actors: List[Dict[str, Any]],
                 end_frame = segment.get('end_frame', 0)
                 dancing_frames.update(range(start_frame, end_frame))
             
-            # Check if co-occurrences overlap with dancing frames
             overlapping_pairs = []
             for pair in target_pairs:
                 pair_frames = set(co_occurrences[pair])
@@ -375,11 +365,9 @@ def initialize_actor_database(actor_config: Dict[str, Any]) -> None:
     
     for actor_name, actor_data in actor_config.items():
         if 'image_paths' in actor_data:
-            # Load face encodings from image paths
             face_encodings = []
             for image_path in actor_data['image_paths']:
                 try:
-                    # Load image and extract face encodings
                     image = cv2.imread(image_path)
                     if image is not None:
                         faces = detect_and_encode_faces(image)
@@ -392,7 +380,6 @@ def initialize_actor_database(actor_config: Dict[str, Any]) -> None:
                 _actor_database.add_actor(actor_name, face_encodings, actor_data.get('metadata', {}))
         
         elif 'encodings' in actor_data:
-            # Use pre-computed encodings
             encodings = [np.array(enc) for enc in actor_data['encodings']]
             _actor_database.add_actor(actor_name, encodings, actor_data.get('metadata', {}))
     

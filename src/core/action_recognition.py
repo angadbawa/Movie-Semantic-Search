@@ -39,7 +39,6 @@ def detect_dancing_action(video_frames: List[np.ndarray],
         model = load_mmaction2_model()
     
     try:
-        # Run inference on video frames
         results = inference_recognizer(model, video_frames)
         
         # Look for dance-related actions
@@ -49,7 +48,6 @@ def detect_dancing_action(video_frames: List[np.ndarray],
         max_confidence = 0.0
         detected_action = None
         
-        # Check predictions for dance-related activities
         for i, (label_idx, score) in enumerate(zip(results['pred_labels'], results['pred_scores'])):
             action_label = model.CLASSES[label_idx].lower()
             confidence = float(score)

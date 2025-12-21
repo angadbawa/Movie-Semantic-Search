@@ -18,7 +18,6 @@ def calculate_object_similarity(objects1: Dict[str, Any], objects2: Dict[str, An
     if not objects1 or not objects2:
         return 0.0
     
-    # Get unique objects as sets
     set1 = set(objects1.get('unique_objects', []))
     set2 = set(objects2.get('unique_objects', []))
     
@@ -28,7 +27,6 @@ def calculate_object_similarity(objects1: Dict[str, Any], objects2: Dict[str, An
     if not set1 or not set2:
         return 0.0  # One empty, one not
     
-    # Calculate Jaccard similarity (intersection over union)
     intersection = len(set1.intersection(set2))
     union = len(set1.union(set2))
     
@@ -38,7 +36,6 @@ def calculate_object_similarity(objects1: Dict[str, Any], objects2: Dict[str, An
     counts1 = objects1.get('object_counts', {})
     counts2 = objects2.get('object_counts', {})
     
-    # Calculate normalized count difference for common objects
     common_objects = set1.intersection(set2)
     count_similarity = 0.0
     
@@ -80,7 +77,6 @@ def calculate_face_similarity(faces1: Dict[str, Any], faces2: Dict[str, Any]) ->
     if count1 == 0 or count2 == 0:
         return 0.0  # One has faces, one doesn't
     
-    # Simple similarity based on face count difference
     max_count = max(count1, count2)
     similarity = 1.0 - abs(count1 - count2) / max_count
     
@@ -196,7 +192,6 @@ def calculate_shot_similarity(shot1: Dict[str, Any], shot2: Dict[str, Any]) -> f
         'dialogue': 0.1    # Whisper + sentiment
     }
     
-    # Calculate weighted similarity
     weighted_similarity = sum(
         similarities[modality] * weights[modality] 
         for modality in similarities
@@ -231,7 +226,6 @@ def sliding_window_scene_detection(shots: List[Dict[str, Any]],
     current_scene = [0]  # Start with first shot
     
     for i in range(1, len(shots)):
-        # Calculate similarity with shots in current scene
         similarities = []
         
         # Look at recent shots in current scene (sliding window)
@@ -241,11 +235,9 @@ def sliding_window_scene_detection(shots: List[Dict[str, Any]],
             similarity = calculate_shot_similarity(shots[i], shots[shot_idx])
             similarities.append(similarity)
         
-        # Use maximum similarity to recent shots
         max_similarity = max(similarities) if similarities else 0.0
         
         if max_similarity >= similarity_threshold:
-            # Add to current scene
             current_scene.append(i)
         else:
             # Start new scene
@@ -260,7 +252,6 @@ def sliding_window_scene_detection(shots: List[Dict[str, Any]],
             
             current_scene = [i]
     
-    # Add the last scene
     if current_scene:
         if len(current_scene) >= config.get('min_scene_length', 1):
             scenes.append(current_scene)
@@ -303,7 +294,6 @@ def create_scene_metadata(shots: List[Dict[str, Any]],
         total_frames += shot.get('frame_count', 0)
         total_duration += shot.get('duration_seconds', 0.0)
     
-    # Create scene signature
     unique_objects = list(set(all_objects))
     
     # Count object occurrences across shots
@@ -346,7 +336,6 @@ def process_shots_to_scenes(shots: List[Dict[str, Any]]) -> List[Dict[str, Any]]
     # Detect scene boundaries
     scene_boundaries = sliding_window_scene_detection(shots)
     
-    # Create scene metadata
     scenes = []
     for i, scene_shot_indices in enumerate(scene_boundaries):
         scene_metadata = create_scene_metadata(shots, scene_shot_indices)

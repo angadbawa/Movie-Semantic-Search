@@ -43,10 +43,8 @@ def detect_objects_in_frame(frame: np.ndarray, model: Optional[YOLO] = None,
         config = get_detection_config()
         confidence_threshold = config['confidence_threshold']
     
-    # Run inference
     results = model(frame, verbose=False)
     
-    # Extract detections
     detections = []
     for result in results:
         boxes = result.boxes

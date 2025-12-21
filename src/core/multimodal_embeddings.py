@@ -98,7 +98,6 @@ def create_visual_embedding(image: np.ndarray, clip_model=None) -> Optional[np.n
         import clip
         from PIL import Image
         
-        # Convert numpy to PIL
         if image.dtype != np.uint8:
             image = (image * 255).astype(np.uint8)
         
@@ -150,18 +149,14 @@ def create_multimodal_embedding(shot_data: Dict[str, Any],
     Returns:
         Multimodal embedding data
     """
-    # Create text description
     text_description = create_scene_text_description(shot_data)
     
-    # Create text embedding
     text_embedding = create_text_embedding(text_description)
     
-    # Create visual embedding if frame is provided
     visual_embedding = None
     if representative_frame is not None:
         visual_embedding = create_visual_embedding(representative_frame)
     
-    # Create structured embedding from metadata
     metadata_embedding = create_metadata_embedding(shot_data)
     
     return {
@@ -182,7 +177,6 @@ def create_metadata_embedding(shot_data: Dict[str, Any]) -> np.ndarray:
     Returns:
         Metadata embedding vector
     """
-    # Create feature vector from structured data
     features = []
     
     # Object features (binary presence of common objects)
@@ -230,18 +224,15 @@ def combine_embeddings(text_emb: np.ndarray,
     embeddings = []
     used_weights = []
     
-    # Add text embedding
     if text_emb is not None and text_emb.size > 0:
         embeddings.append(text_emb * weights[0])
         used_weights.append(weights[0])
     
-    # Add visual embedding if available
     if visual_emb is not None and visual_emb.size > 0:
         # Resize to match text embedding if needed
         if len(embeddings) > 0:
             target_size = embeddings[0].shape[0]
             if visual_emb.shape[0] != target_size:
-                # Simple resize by truncation or padding
                 if visual_emb.shape[0] > target_size:
                     visual_emb = visual_emb[:target_size]
                 else:
@@ -251,7 +242,6 @@ def combine_embeddings(text_emb: np.ndarray,
         embeddings.append(visual_emb * weights[1])
         used_weights.append(weights[1])
     
-    # Add metadata embedding
     if metadata_emb is not None and metadata_emb.size > 0:
         # Pad or truncate to match other embeddings
         if len(embeddings) > 0:
@@ -299,7 +289,6 @@ def search_similar_scenes(scenes_or_query: Any,
         for i, scene in enumerate(scenes):
             scene_embedding = scene.get('embedding', {}).get('combined_embedding')
             if scene_embedding is not None and hasattr(scene_embedding, 'shape'):
-                # Calculate cosine similarity
                 min_dim = min(query_embedding.shape[0], scene_embedding.shape[0])
                 query_norm = query_embedding[:min_dim]
                 scene_norm = scene_embedding[:min_dim]
@@ -334,7 +323,6 @@ def search_similar_scenes(scenes_or_query: Any,
         similarities = []
         
         for i, scene_emb in enumerate(scene_embeddings):
-            # Calculate cosine similarity
             if scene_emb is not None and scene_emb.size > 0:
                 # Ensure same dimensionality
                 min_dim = min(query_embedding.shape[0], scene_emb.shape[0])
@@ -370,7 +358,6 @@ def process_natural_language_query(query: str) -> Optional[np.ndarray]:
         Query embedding vector or None if processing fails
     """
     try:
-        # Create text embedding for the query
         query_embedding = create_text_embedding(query)
         return query_embedding
     except Exception as e:
@@ -389,7 +376,6 @@ def parse_natural_language_query(query: str) -> Dict[str, Any]:
     """
     query_lower = query.lower()
     
-    # Extract actors mentioned
     # This is a simple implementation - could be enhanced with NER
     actors = []
     common_actors = ['abhishek', 'amitabh', 'shahrukh', 'salman', 'aamir', 'hrithik', 'ranbir']
@@ -397,7 +383,6 @@ def parse_natural_language_query(query: str) -> Dict[str, Any]:
         if actor in query_lower:
             actors.append(actor)
     
-    # Extract actions
     actions = []
     if 'danc' in query_lower:
         actions.append('dancing')
@@ -406,14 +391,12 @@ def parse_natural_language_query(query: str) -> Dict[str, Any]:
     if 'run' in query_lower:
         actions.append('running')
     
-    # Extract emotions
     emotions = []
     emotion_keywords = ['happy', 'sad', 'angry', 'surprised', 'romantic', 'emotional']
     for emotion in emotion_keywords:
         if emotion in query_lower:
             emotions.append(emotion)
     
-    # Extract objects/settings
     objects = []
     if 'car' in query_lower:
         objects.append('car')

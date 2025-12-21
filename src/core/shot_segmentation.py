@@ -113,10 +113,8 @@ def save_shot_as_video(shot_frames: List[np.ndarray], output_path: str,
         config = get_video_config()
         fps = config['fps']
     
-    # Get frame dimensions
     height, width = shot_frames[0].shape[:2]
     
-    # Create video writer
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
     
@@ -162,7 +160,6 @@ def analyze_shot_content(shot_frames: List[np.ndarray]) -> Dict[str, Any]:
         faces = detect_and_encode_faces(frame)
         all_faces.extend(faces)
     
-    # Create signatures
     object_signature = create_object_signature(all_objects)
     face_signature = create_face_signature(all_faces)
     
@@ -191,7 +188,6 @@ def process_video_to_shots(video_path: str, output_dir: Optional[str] = None) ->
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
     
-    # Extract frames
     logging.info(f"Processing video: {video_path}")
     frames = extract_frames_from_video(video_path)
     
@@ -202,17 +198,14 @@ def process_video_to_shots(video_path: str, output_dir: Optional[str] = None) ->
     # Detect shot boundaries
     boundaries = detect_shot_boundaries(frames)
     
-    # Create shots
     shots = create_shots_from_boundaries(frames, boundaries)
     
-    # Process each shot
     shot_metadata = []
     
     for i, shot_frames in enumerate(shots):
         shot_id = f"shot_{i + 1:03d}"
         shot_video_path = output_dir / f"{shot_id}.mp4"
         
-        # Save shot video
         success = save_shot_as_video(shot_frames, str(shot_video_path))
         
         if success:
